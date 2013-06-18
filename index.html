@@ -1,0 +1,87 @@
+<html>
+
+<head>
+    <title>Reading JSON with jQuery</title>
+
+	<style type="text/css">
+		body {
+		  font-size:14px;
+		}
+		#feed {
+		  float:left;
+		  width:308px;
+		  height:308px;
+		  margin:10px auto;
+		  border:0px solid #222;
+		  background:#FFF;
+		  overflow:hidden;
+		}
+		#feed > span {
+		  display:block;
+		  margin:130px auto;
+		  padding:0;
+		  text-align:center;
+		}
+		#feed > a > img {
+		  border:1px solid #DDD;
+		}
+		p, pre {
+		  width:960px;
+		  margin:10px auto;
+		  color:#444;
+		  clear:both;
+		}
+		p#feed {
+		  clear:none;
+		}
+		p {
+		  letter-spacing:.04em;
+		}
+	</style>
+</head>
+
+<body>
+
+	<h1> &nbsp;</h1>
+    <p id="feed"></p>
+	<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.3.2/jquery.min.js"></script>
+	<script type="text/javascript">
+		$(document).ready(function() {
+		    loadFlickr("40406042@N08");
+		});
+
+		function loadFlickr(flickrid)
+		{
+			// Display a loading icon in our display element
+			$('#feed').html('<span><img src="images/lightbox-ico-loading.gif" /></span>');
+		
+			// Request the JSON and process it
+			$.ajax({
+				type:'GET',
+				url:"http://api.flickr.com/services/feeds/photos_public.gne",
+				data:"id="+flickrid+"&lang=en-us&format=json&jsoncallback=?",
+				success:function(feed) {
+					// Create an empty array to store images
+					var thumbs = [];
+					// Loop through the items
+					for(var i=0, l=feed.items.length; i < l && i < 16; ++i) 
+					{
+						// Manipulate the image to get thumb and medium sizes
+						var img = feed.items[i].media.m.replace(
+							/^(.*?)_m\.jpg$/, 
+							'<a href="$1.jpg"><img src="$1_s.jpg" alt="" /></a>'
+						);
+		
+						// Add the new element to the array
+						thumbs.push(img);
+					}
+		
+					// Display the thumbnails on the page
+					$('#feed').html(thumbs.join(''));
+				},
+				dataType:'jsonp'
+			});
+		}
+	</script>
+</body>
+</html>
